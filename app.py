@@ -6,9 +6,15 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from pathlib import Path
 import base64
 
+
+# Charger le DataFrame
+chemin = Path(__file__).parent
+fichier_data = chemin / "df_clean.csv"
+df = pd.read_csv(fichier_data)
+
 # Fonction pour obtenir la représentation base64 d'un fichier binaire
 def get_base64(bin_file):
-    with open(bin_file) as f:
+    with open(bin_file, chemin / "rb") as f:
         data = f.read()
     return base64.b64encode(data).decode()
 
@@ -31,13 +37,6 @@ def set_background(png_file):
 # Appeler la fonction pour définir l'image comme fond d'écran
 set_background("background.png")
 
-
-
-
-# Charger le DataFrame
-chemin = Path(__file__).parent
-fichier_data = chemin / "df_clean.csv"
-df = pd.read_csv(fichier_data)
 
 # Charger le modèle Nearest Neighbors
 modelNN = load(chemin / "model.joblib")
