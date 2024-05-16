@@ -8,7 +8,7 @@ import base64
 
 # Fonction pour obtenir la représentation base64 d'un fichier binaire
 def get_base64(bin_file):
-    with open(bin_file, "rb") as f:
+    with open(bin_file) as f:
         data = f.read()
     return base64.b64encode(data).decode()
 
