@@ -70,7 +70,7 @@ with tab1:
 
     with col1:
         #user_input = st.text_input('Entrez un nom de groupe:')
-        user_input = st.selectbox(**'Choisi un groupe:'**, df['band_name'].sort_values(ascending=True))
+        user_input = st.selectbox('Choisi un groupe:', df['band_name'].sort_values(ascending=True))
 
         if st.button('Rechercher:'):
             # Trouver l'index du groupe saisi par l'utilisateur
