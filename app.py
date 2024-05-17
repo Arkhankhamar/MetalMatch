@@ -31,9 +31,6 @@ def set_background(png_file):
 # Appeler la fonction pour définir l'image comme fond d'écran
 set_background("background.png")
 
-
-
-
 # Charger le DataFrame
 chemin = Path(__file__).parent
 fichier_data = chemin / "df_clean.csv"
@@ -58,39 +55,90 @@ with st.sidebar:
     st.image('logo_heavymetal.png')
     st.title('\m/ (>.<) \m/ . . \m/ (>.<) \m/')
     st.header("Tu as aimé un groupe lors d'un festoche mais tu ne connais pas d'autres groupe du même genre: cet outil est fait pour toi!!!")
+    st.image('https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW9qemJpYXVnMmFoZXd1eTgyYTFhYW83ZXBpYml3bjQ4NTB2cDg5ayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/JFsuocIUYYLNGYOXCb/giphy.gif')
 
-col1, col2 = st.columns(2)
+# Setup tabs
+tab1, tab2 = st.tabs(["METAL DETECTOR", "INFOS GENERALES DE LA BDD"])
 
-eureka=False
+with tab1:
 
-with col1:
-    #user_input = st.text_input('Entrez un nom de groupe:')
-    user_input = st.selectbox('Choisissez un groupe:', df['band_name'].sort_values(ascending=True))
+    col1, col2 = st.columns(2)
 
-    if st.button('Rechercher:'):
-        # Trouver l'index du groupe saisi par l'utilisateur
-        user_index = dico_bands[user_input]
-        st.write('Tu as choisi:')
+    eureka=False
 
-        choix = df.iloc[user_index, :-1]
-        st.write(f"Nom : {choix[0]}")
-        st.write(f"Style : {choix[5]}")
-        st.write(f"Origine : {choix[3]}")
-        st.write(f"Formé en : {choix[2]}")
-        st.write('\n')  # Ajoute une ligne vide
-        # Trouver les voisins les plus proches du nouvel exemple
-        _, indices = modelNN.kneighbors(tfidf_matrix[user_index])
-        eureka=True
+    with col1:
+        #user_input = st.text_input('Entrez un nom de groupe:')
+        user_input = st.selectbox('Choisi un groupe:', df['band_name'].sort_values(ascending=True))
 
-with col2:
-    # Afficher les recommandations (noms des groupes similaires)
-    if eureka:
-        st.header('Ecoute ces groupes:')
-        for index in indices[0]:
-            if index != user_index:  # Ignorer l'entrée utilisateur elle-même
-                recommendation = df.loc[index, ['band_name', 'style', 'origin', 'formed']]#.values.tolist()
-                st.write(f"Nom : {recommendation[0]}")
-                st.write(f"Style : {recommendation[1]}")
-                st.write(f"Origine : {recommendation[2]}")
-                st.write(f"Formé en : {recommendation[3]}")
-                st.write('\n')  # Ajoute une ligne vide entre chaque recommandation
+        if st.button('Rechercher:'):
+            # Trouver l'index du groupe saisi par l'utilisateur
+            user_index = dico_bands[user_input]
+            st.write('Tu as choisi:')
+
+            choix = df.iloc[user_index, :-1]
+            st.markdown(f"<p style='color: red; font-weight: bold;'>{choix[0]}</p>", unsafe_allow_html=True)
+            st.write(f"Nom : **{choix[0]}**")
+            st.write(f"Style : {choix[5]}")
+            st.write(f"Origine : {choix[3]}")
+            st.write(f"Formé en : {choix[2]}")
+            st.image('https://i.pinimg.com/originals/17/a9/4f/17a94f829322d7799ceab1ff9221cee8.gif')
+            st.write('\n')  # Ajoute une ligne vide
+            # Trouver les voisins les plus proches du nouvel exemple
+            _, indices = modelNN.kneighbors(tfidf_matrix[user_index])
+            eureka=True
+
+    with col2:
+        # Afficher les recommandations (noms des groupes similaires)
+        if eureka:
+            st.header("Metal Detector te propose d'écouter:")
+            for index in indices[0]:
+                if index != user_index:  # Ignorer l'entrée utilisateur elle-même
+                    recommendation = df.loc[index, ['band_name', 'style', 'origin', 'formed']]#.values.tolist()
+                    st.markdown(f"<p style='color: red; font-weight: bold;'>{recommendation[0]}</p>", unsafe_allow_html=True)
+                    st.write(f"Nom : **{recommendation[0]}**")
+                    st.write(f"Style : {recommendation[1]}")
+                    st.write(f"Origine : {recommendation[2]}")
+                    st.write(f"Formé en : {recommendation[3]}")
+                    st.write('\n')  # Ajoute une ligne vide entre chaque recommandation
+
+with tab2:
+
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+
+    st.header("Un peu d'informations sur la base")
+    groupes_par_origine = df.groupby('origin').size().reset_index(name='count')
+    # Trier par ordre décroissant du nombre de groupes
+    groupes_par_origine = groupes_par_origine.sort_values(by='count', ascending=False)
+
+    top_10_origines = groupes_par_origine.head(10)
+    fig1 = plt.figure(figsize=(20, 6), facecolor='none')
+    sns.barplot(data=top_10_origines, x='origin', y='count')
+    plt.xticks(rotation=90)
+    plt.title("Nombre de groupes par pays d'origine")
+    plt.xlabel('Origine')
+    plt.ylabel('Nombre de groupes')
+    st.pyplot(fig1)
+
+
+    #tri des date de la colonne formed pour que ça apparraisse dans l'ordre sur X
+    tri_date = df['formed'].value_counts().sort_index()
+
+    fig2 = plt.figure(figsize=(10, 6), facecolor='none')
+    sns.countplot(data=df, x='formed', order=tri_date.index)
+    plt.xticks(rotation=90)
+    plt.title('Nombre de groupes par années de formation')
+    plt.xlabel('Année de formation')
+    plt.ylabel('Nombre de groupes')
+    st.pyplot(fig2)
+
+    # Sélectionner les top 10 groupes avec le plus de fans
+    top_10_groupes = df.sort_values(by='fans', ascending=False).head(10)
+
+    fig3 = plt.figure(figsize=(20, 6), facecolor='none')
+    sns.barplot(data=top_10_groupes, x='band_name', y='fans')
+    plt.xticks(rotation=90)
+    plt.title('Top 10 des groupes avec le plus de fans')
+    plt.xlabel('Groupe')
+    plt.ylabel('Nombre de fans')
+    st.pyplot(fig3)
