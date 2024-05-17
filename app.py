@@ -33,6 +33,16 @@ def set_background(png_file):
 # Appeler la fonction pour définir l'image comme fond d'écran
 set_background("background.png")
 
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap');
+
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown p {
+        font-family: 'Metal Mania', cursive;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Charger le DataFrame
 chemin = Path(__file__).parent
 fichier_data = chemin / "df_clean.csv"
@@ -45,8 +55,8 @@ tfidf = TfidfVectorizer(ngram_range=(1, 2))
 tfidf_matrix = tfidf.fit_transform(df['soup'])
 
 # Interface utilisateur Streamlit
-st.title("!Viens ici Jean-Hellfest inculte!")
-st.header('Complète ta culture métal grâce à cet outil')
+st.markdown("<h1 style='color: red ;'>Viens ici Jean-Hellfest inculte</h1>", unsafe_allow_html=True)
+st.markdown("<h2 style='color: red;'>Complete ta culture metal grâce à cet outil</h2>", unsafe_allow_html=True)
 
 st.write('\n')
 st.write('\n')
@@ -55,8 +65,7 @@ dico_bands = {name: index for name, index in zip(df['band_name'], df.index)}
 
 with st.sidebar:
     st.image('logo_heavymetal.png')
-    st.title('\m/ (>.<) \m/ . . \m/ (>.<) \m/')
-    st.header("Tu as aimé un groupe lors d'un festoche mais tu ne connais pas d'autres groupe du même genre: cet outil est fait pour toi!!!")
+    st.markdown("<h1 style='color: DeepPink ;'>Tu as aimé un groupe lors d'un festoche mais tu ne connais pas d'autres groupe du même genre: cet outil est fait pour toi!!!</h1>", unsafe_allow_html=True)
     st.image('https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW9qemJpYXVnMmFoZXd1eTgyYTFhYW83ZXBpYml3bjQ4NTB2cDg5ayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/JFsuocIUYYLNGYOXCb/giphy.gif')
 
 # Setup tabs
@@ -70,7 +79,8 @@ with tab1:
 
     with col1:
         #user_input = st.text_input('Entrez un nom de groupe:')
-        user_input = st.selectbox('Choisi un groupe:', df['band_name'].sort_values(ascending=True))
+        st.write("Choisi un groupe camarade:")
+        user_input = st.selectbox('',df['band_name'].sort_values(ascending=True))
 
         if st.button('Rechercher:'):
             # Trouver l'index du groupe saisi par l'utilisateur
