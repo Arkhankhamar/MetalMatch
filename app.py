@@ -5,6 +5,8 @@ from joblib import load
 from sklearn.feature_extraction.text import TfidfVectorizer
 from pathlib import Path
 import base64
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Fonction pour obtenir la représentation base64 d'un fichier binaire
 def get_base64(bin_file):
@@ -102,9 +104,6 @@ with tab1:
                     st.write('\n')  # Ajoute une ligne vide entre chaque recommandation
 
 with tab2:
-
-    import seaborn as sns
-    import matplotlib.pyplot as plt
 
     st.header("Un peu d'informations sur la base")
     groupes_par_origine = df.groupby('origin').size().reset_index(name='count')
